@@ -11,7 +11,9 @@ class SpotifyOperator:
     self.token = None
     self.uri = None
     self.music = None
+    self.query = None
 
+  #fazer pool de token
   def getToken(self):
     url = os.environ['SPOTIFY-TOKEN-URL']
     payload = os.environ['SPOTIFY-TOKEN-PAYLOAD']
@@ -23,12 +25,12 @@ class SpotifyOperator:
     response = requests.request("POST", url, headers=headers, data=payload).json()
     self.token = response['access_token']
 
-  def getTrackUri(self):
+  def getTrackUri(self,query):
     trackNameList = []
     trackUriList = []
     url = os.environ['SPOTIFY-URI-URL']
     payload = {}
-    params = {"query":"baile do cinga", "type":"track", "market":"US","limit":"5", "offset":"0"}
+    params = {"query":query, "type":"track", "market":"US","limit":"6", "offset":"0"}
     headers = {'Authorization': "Bearer " + str(self.token)}
     response = requests.request("get", url, headers=headers, params=params, data=payload).json()
     response = response['tracks']['items']
@@ -39,8 +41,5 @@ class SpotifyOperator:
       trackUriList.append(trackUriToList)
     self.tracks = trackNameList
     self.uri = trackUriList
-
-spot = SpotifyOperator()
-spot.getToken()
-spot.getTrackUri()
-print(spot.tracks, spot.uri)
+    #return JSON
+    #return base64 of images
