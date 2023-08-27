@@ -1,17 +1,28 @@
 import requests
 from dotenv import load_dotenv
 import os
+import base64
+import requests
+import json
+
 load_dotenv('.env')
 
 #Pode ser que volte trackName igual mas URI diferentes
 #Definir limit de returns
 class SpotifyOperator:
 
+  @staticmethod
+  def get_as_base64(url):
+    return base64.b64encode(requests.get(url).content)
+
   def __init__(self):
     self.token = None
     self.uri = None
     self.music = None
+    self.query = None
+    self.trackList = None
 
+  #fazer pool de token
   def getToken(self):
     url = os.environ['SPOTIFY-TOKEN-URL']
     payload = os.environ['SPOTIFY-TOKEN-PAYLOAD']
@@ -23,24 +34,17 @@ class SpotifyOperator:
     response = requests.request("POST", url, headers=headers, data=payload).json()
     self.token = response['access_token']
 
-  def getTrackUri(self):
-    trackNameList = []
-    trackUriList = []
+  def getTrackUri(self,query):
+    trackList = []
     url = os.environ['SPOTIFY-URI-URL']
     payload = {}
-    params = {"query":"baile do cinga", "type":"track", "market":"US","limit":"5", "offset":"0"}
+    params = {"query":query, "type":"track", "market":"US","limit":"6", "offset":"0"}
     headers = {'Authorization': "Bearer " + str(self.token)}
     response = requests.request("get", url, headers=headers, params=params, data=payload).json()
     response = response['tracks']['items']
     for x in range(len(response)):
       trackNameToList = response[x]['name']
       trackUriToList = response[x]['uri']
-      trackNameList.append(trackNameToList)
-      trackUriList.append(trackUriToList)
-    self.tracks = trackNameList
-    self.uri = trackUriList
-
-spot = SpotifyOperator()
-spot.getToken()
-spot.getTrackUri()
-print(spot.tracks, spot.uri)
+      artistToList = response[x]['album']['artists'][0]['name']
+      trackList.append({"trackName":trackNameToList, "trackUri":trackUriToList, "trackArtist":artistToList})
+    self.trackList = trackList
