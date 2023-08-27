@@ -45,7 +45,6 @@ class SpotifyOperator:
     for x in range(len(response)):
       trackNameToList = response[x]['name']
       trackUriToList = response[x]['uri']
-      base64ToList = SpotifyOperator.get_as_base64(response[x]['album']['images'][0]['url'])
       artistToList = response[x]['album']['artists'][0]['name']
-      trackList.append({"trackName":trackNameToList, "trackUri":trackUriToList, "trackArtist":artistToList})#,base64ToList])
+      trackList.append({"trackName":trackNameToList, "trackUri":trackUriToList, "trackArtist":artistToList})
     self.trackList = trackList
